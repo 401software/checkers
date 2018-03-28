@@ -63,6 +63,8 @@ public class MainWindow extends JFrame {
         scoreLabel = new javax.swing.JLabel();
         OPPONENT_LABEL = new javax.swing.JLabel();
         opponentLabel = new javax.swing.JLabel();
+        TURN_LABEL = new javax.swing.JLabel();
+        turnLabel = new javax.swing.JLabel();
         chatPanel = new javax.swing.JPanel();
         titlePanel = new javax.swing.JPanel();
         statusLabel = new javax.swing.JLabel();
@@ -141,10 +143,25 @@ public class MainWindow extends JFrame {
         opponentLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         opponentLabel.setText("<not paired>");
 
+        TURN_LABEL.setFont(new java.awt.Font("Noto Sans", 1, 12)); // NOI18N
+        TURN_LABEL.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        TURN_LABEL.setText("-Player's Turn-");
+
+        turnLabel.setFont(new java.awt.Font("Noto Sans", 2, 10)); // NOI18N
+        turnLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        turnLabel.setText("<game over>");
+        turnLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
         javax.swing.GroupLayout buttonPanelLayout = new javax.swing.GroupLayout(buttonPanel);
         buttonPanel.setLayout(buttonPanelLayout);
         buttonPanelLayout.setHorizontalGroup(
             buttonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(NEW_GAME_LABEL, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(DRAW_LABEL, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(RESIGN_LABEL, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(NEW_OPP_LABEL, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(TURN_LABEL, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(turnLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(buttonPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(buttonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -154,18 +171,18 @@ public class MainWindow extends JFrame {
                     .addComponent(resignGame, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(SCORE_LABEL, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(scoreLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(OPPONENT_LABEL, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(opponentLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(OPPONENT_LABEL, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .addComponent(NEW_GAME_LABEL, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(DRAW_LABEL, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(RESIGN_LABEL, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(NEW_OPP_LABEL, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(opponentLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         buttonPanelLayout.setVerticalGroup(
             buttonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
-                .addContainerGap(48, Short.MAX_VALUE)
+                .addContainerGap(19, Short.MAX_VALUE)
+                .addComponent(TURN_LABEL)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(turnLabel)
+                .addGap(18, 18, 18)
                 .addComponent(SCORE_LABEL)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(scoreLabel)
@@ -189,7 +206,7 @@ public class MainWindow extends JFrame {
                 .addComponent(RESIGN_LABEL)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(resignGame)
-                .addGap(78, 78, 78))
+                .addGap(43, 43, 43))
         );
 
         javax.swing.GroupLayout chatPanelLayout = new javax.swing.GroupLayout(chatPanel);
@@ -200,7 +217,7 @@ public class MainWindow extends JFrame {
         );
         chatPanelLayout.setVerticalGroup(
             chatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 116, Short.MAX_VALUE)
+            .addGap(0, 119, Short.MAX_VALUE)
         );
 
         titlePanel.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(196, 26, 26)));
@@ -327,7 +344,7 @@ public class MainWindow extends JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(chatType)
                             .addComponent(sendChat, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 22, Short.MAX_VALUE)))
+                        .addGap(0, 27, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -444,6 +461,15 @@ public class MainWindow extends JFrame {
     }
     
     /**
+     * Accessor to update the turn status from outside of the class
+     * @param true if current player's turn, false if opponent's turn
+     */
+    protected static void updateTurn(String turn)
+    {
+        turnLabel.setText(turn);
+    }
+    
+    /**
      * Accessor for outside classes to update score
      * @param the score 
      */
@@ -469,6 +495,7 @@ public class MainWindow extends JFrame {
     private javax.swing.JLabel OPPONENT_LABEL;
     private javax.swing.JLabel RESIGN_LABEL;
     private javax.swing.JLabel SCORE_LABEL;
+    private javax.swing.JLabel TURN_LABEL;
     private javax.swing.JInternalFrame boardFrame;
     private javax.swing.JPanel buttonPanel;
     private static javax.swing.JTextArea chatDisplay;
@@ -486,5 +513,6 @@ public class MainWindow extends JFrame {
     private static javax.swing.JLabel statusLabel;
     private javax.swing.JLabel titleBar;
     private javax.swing.JPanel titlePanel;
+    private static javax.swing.JLabel turnLabel;
     // End of variables declaration//GEN-END:variables
 }

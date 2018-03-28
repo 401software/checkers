@@ -91,7 +91,13 @@ public class Board extends JComponent
 		  try
 		  {
 			control = new ControlUnit(dhcp, frame);
-                        frame.setTitle("Checkerz  |  " + control.getMyID());
+                        frame.setTitle("Checkerz  |  " + control.getMyUsername());
+                        
+                        System.out.print("\nWaiting for ControlUnit");
+                        while(!control.ready)
+                        {
+                            System.out.print(".");
+                        }
 		  }
 		  catch(UnknownHostException e)
 		  {
@@ -145,7 +151,20 @@ public class Board extends JComponent
                                 if(control.engaged() && control.gameOver())
                                 {
                                     gameOver();
+                                    wasDisengaged = true;
+                                    clearBoard();
                                 }
+                                
+                                if(control.engaged() && control.getMyTurn() && !control.gameOver())
+                                {
+                                    MainWindow.updateTurn(control.getMyUsername());
+                                }
+                                else if(control.engaged() && !control.getMyTurn() && !control.gameOver())
+                                {
+                                    MainWindow.updateTurn(control.getOppUsername());
+                                }
+                                else
+                                    MainWindow.updateTurn("<game over>");
                                 
                                 if(status != null)
                                 {
@@ -173,10 +192,12 @@ public class Board extends JComponent
                                 
                                 if(chat!=null && !chat.equals(""))
                                 {
-                                    MainWindow.chat(chat, "Opponent", false);
+                                    MainWindow.chat(chat, control.getOppUsername(), false);
                                 }
-
+                                
+                                
                                 MainWindow.updateScore(score);
+                                MainWindow.updateOpp(control.getOppUsername());
 
 
 
@@ -190,11 +211,8 @@ public class Board extends JComponent
                                     engaged();
 
                                     //clear and repopulate the board
-                                    if(boardEmpty)
-                                    {
-                                        fillBoard();
-                                        boardEmpty = false;
-                                    }
+                                    clearBoard();
+                                    fillBoard();
                                 }
                                 else if(!prevOpp.equals(currOpp) && !control.engaged())
                                 {
@@ -203,29 +221,27 @@ public class Board extends JComponent
                                     try { MainWindow.clearChat();}
                                     catch(Exception  e){System.out.println(e);}
                                     //clear the board
+                                    clearBoard();
                                 }
                                 else if(wasDisengaged && control.engaged())
                                 {
                                     wasDisengaged = false;
-                                    engaged();
+                                    gameOver();
+                                    clearBoard();
+                                    fillBoard();
                                     try { MainWindow.clearChat();}
                                     catch(Exception  e){System.out.println(e);}
-                                    MainWindow.opponentLabel.setText(control.getOppID());
+                                    MainWindow.opponentLabel.setText(control.getOppUsername());
                                 }
 
                                 if(control.engaged() && !prevOpp.equals(currOpp))
                                 {
-                                    MainWindow.updateOpp(currOpp);
                                     engaged();
+                                    clearBoard();
+                                    fillBoard();
                                     try { MainWindow.clearChat();}
                                     catch(Exception  e){System.out.println(e);}
                                     prevOpp = currOpp;
-                                }
-                                else if(!control.engaged() && !prevOpp.equals(currOpp))
-                                {
-                                    MainWindow.updateOpp("     ");
-                                    try { MainWindow.clearChat();}
-                                    catch(Exception  e){System.out.println(e);}
                                 }
 
 
@@ -453,32 +469,42 @@ public class Board extends JComponent
     {
         if(connected)
           {
+              add(new Checker(CheckerType.RED_REGULAR), 5, 1);
+              add(new Checker(CheckerType.RED_REGULAR), 5, 3);
+              add(new Checker(CheckerType.RED_REGULAR), 5, 5);
+              add(new Checker(CheckerType.RED_REGULAR), 5, 7);
+              add(new Checker(CheckerType.RED_REGULAR), 6, 0);
               add(new Checker(CheckerType.RED_REGULAR), 6, 2);
               add(new Checker(CheckerType.RED_REGULAR), 6, 4);
               add(new Checker(CheckerType.RED_REGULAR), 6, 6);
-              add(new Checker(CheckerType.RED_REGULAR), 6, 8);
               add(new Checker(CheckerType.RED_REGULAR), 7, 1);
               add(new Checker(CheckerType.RED_REGULAR), 7, 3);
               add(new Checker(CheckerType.RED_REGULAR), 7, 5);
               add(new Checker(CheckerType.RED_REGULAR), 7, 7);
-              add(new Checker(CheckerType.RED_REGULAR), 8, 2);
-              add(new Checker(CheckerType.RED_REGULAR), 8, 4);
-              add(new Checker(CheckerType.RED_REGULAR), 8, 6);
-              add(new Checker(CheckerType.RED_REGULAR), 8, 8);
 
+              add(new Checker(CheckerType.BLACK_REGULAR), 0, 0);
+              add(new Checker(CheckerType.BLACK_REGULAR), 0, 2);
+              add(new Checker(CheckerType.BLACK_REGULAR), 0, 4);
+              add(new Checker(CheckerType.BLACK_REGULAR), 0, 6);
               add(new Checker(CheckerType.BLACK_REGULAR), 1, 1);
               add(new Checker(CheckerType.BLACK_REGULAR), 1, 3);
               add(new Checker(CheckerType.BLACK_REGULAR), 1, 5);
               add(new Checker(CheckerType.BLACK_REGULAR), 1, 7);
+              add(new Checker(CheckerType.BLACK_REGULAR), 2, 0);
               add(new Checker(CheckerType.BLACK_REGULAR), 2, 2);
               add(new Checker(CheckerType.BLACK_REGULAR), 2, 4);
               add(new Checker(CheckerType.BLACK_REGULAR), 2, 6);
-              add(new Checker(CheckerType.BLACK_REGULAR), 2, 8);
-              add(new Checker(CheckerType.BLACK_REGULAR), 3, 1);
-              add(new Checker(CheckerType.BLACK_REGULAR), 3, 3);
-              add(new Checker(CheckerType.BLACK_REGULAR), 3, 5);
-              add(new Checker(CheckerType.BLACK_REGULAR), 3, 7);
           }
+    }
+   
+    /**
+     * Clears the board...obvs
+     */
+    protected void clearBoard()
+    {
+        //PosCheck posCheckA: posChecks)
+        
+        posChecks.clear();
     }
         
         /**
@@ -535,22 +561,89 @@ public class Board extends JComponent
 
    public void add(Checker checker, int row, int col)
    {
-      if (row < 1 || row > 8)
+      if (row < 0 || row > 7)
          throw new IllegalArgumentException("row out of range: " + row);
-      if (col < 1 || col > 8)
+      if (col < 0 || col > 7)
          throw new IllegalArgumentException("col out of range: " + col);
       PosCheck posCheck = new PosCheck();
       posCheck.checker = checker;
 
-      posCheck.cx = (col - 1) * SQUAREDIM + SQUAREDIM / 2;
-      posCheck.cy = (row - 1) * SQUAREDIM + SQUAREDIM / 2;
+      posCheck.cx = (col) * SQUAREDIM + SQUAREDIM / 2;
+      posCheck.cy = (row) * SQUAREDIM + SQUAREDIM / 2;
       for (PosCheck _posCheck: posChecks)
          if (posCheck.cx == _posCheck.cx && posCheck.cy == _posCheck.cy)
             throw new AlreadyOccupiedException("square at (" + row + "," +
                                                col + ") is occupied");
       posChecks.add(posCheck);
    }
+   
+   protected void removePiece(Checker check, int row, int col)
+   {
+      int oldX = 0;
+      int oldY = 0;
+      switch(col)
+      {
+         case 0:
+                oldX = 31;
+                break;
+         case 1:
+                oldX = 93;
+                break;
+         case 2:
+                oldX = 155;
+                break;
+         case 3:
+                oldX = 217;
+                break;
+         case 4:
+                oldX = 279;
+                break;
+         case 5:
+                oldX = 341;
+                break;
+         case 6:
+                oldX = 403;
+                break;
+         case 7:
+                oldX = 465;
+     }
 
+     switch(row)
+     {
+         case 0:
+                oldY = 31;
+                break;
+         case 1:
+                oldY = 93;
+                break;
+         case 2:
+                oldY = 155;
+                break;
+         case 3:
+                oldY = 217;
+                break;
+         case 4:
+                oldY = 279;
+                break;
+         case 5:
+                oldY = 341;
+                break;
+         case 6:
+                oldY = 403;
+                break;
+         case 7:
+                oldY = 465;
+     }
+
+      for (PosCheck posCheckA: posChecks)
+      {
+            if (posCheckA.cx == oldX && posCheckA.cy == oldY)
+            {
+               posChecks.remove(posCheckA);
+               break;
+            }
+      }
+   }
 
     public boolean move()
     {
@@ -594,7 +687,7 @@ public class Board extends JComponent
         switch((int)oppMove[2])
         {
              case 0:
-                    newX = 31;
+                    newY = 31;
                     break;
              case 1:
                     newY = 93;

@@ -25,7 +25,10 @@ public class ControlUnit extends Thread
 	private Queue chat;				//Queue for chat messages
 	private Queue oppMoves;			//Queue for opponent moves
 	private boolean gameOver;		//flag if the game is over
+        private String myUsername;              //username of current player
+        private String oppUsername;             //username of opponent
 	private JFrame frame;			//parent frame from calling class
+        protected boolean ready;                //whether or not we are ready to being netowrking
 	
 	/**
 	*OVERLOADED
@@ -44,7 +47,9 @@ public class ControlUnit extends Thread
 		oppMoves = new Queue();
 		engaged = false;
 		gameOver = false;
-
+                myUsername = "Moi";
+                oppUsername = "John Doe";
+                
 		//makes sure that TransmitData is fully initialized so that our data will be accurate
 		do
 		{
@@ -57,6 +62,8 @@ public class ControlUnit extends Thread
 			control = new ControlLogic(true);
 		else
 			control = new ControlLogic(false);
+                
+                ready = true;
 
 		//begin thread
 		start();
@@ -70,9 +77,42 @@ public class ControlUnit extends Thread
 	*/
 	public ControlUnit(String ip, JFrame frame) throws Exception
 	{
-		this(ip);
-		
 		this.frame = frame;
+		myScore = 0;
+		mustJump = false;
+                anotherJump = false;
+		out = new Queue();
+		status = new Queue();
+		chat = new Queue();
+		oppMoves = new Queue();
+		engaged = false;
+		gameOver = false;
+                myUsername = "Moi";
+                oppUsername = "John Doe";
+                
+                //get player's username
+                String user = JOptionPane.showInputDialog(frame, "Please input your desired username: ", myUsername);
+                myUsername = user;
+                
+                network = new TransmitData(ip);
+                
+		//makes sure that TransmitData is fully initialized so that our data will be accurate
+		do
+		{
+			myID = network.getMyID();
+			oppID = network.getOppID();
+		}while(!network.initialized());
+
+		//decide who begins
+		if(oppID == null || Integer.parseInt(network.getMyID()) < Integer.parseInt(network.getOppID()))
+			control = new ControlLogic(true);
+		else
+			control = new ControlLogic(false);
+                
+                ready = true;
+
+		//begin thread
+		start();
 	}
 
 	/**
@@ -186,6 +226,24 @@ public class ControlUnit extends Thread
 	{
 		return control.getMyScore();
 	}
+        
+        /**
+         * Accessor for player username
+         * @reutrn username of player
+         */
+        protected String getMyUsername()
+        {
+            return myUsername;
+        }
+        
+        /**
+         * Accessor for oppnent username
+         * @reutrn username of opponent
+         */
+        protected String getOppUsername()
+        {
+            return oppUsername;
+        }
 	
 	/**
 	*Returns true if the game is over
@@ -324,7 +382,7 @@ public class ControlUnit extends Thread
 			{
 				System.out.println("Exception recieving in ControlUnit(): " + e);
 			}
-
+                        
 			decode(hold);
 
 			//make sure we have opponent
@@ -487,6 +545,12 @@ public class ControlUnit extends Thread
 					chat.enque(data.substring(14));
 					status.enque("Message recieved from opponent.");
 				}
+                                
+                                else if(data.substring(12,13).equals("u"))
+                                {
+                                    System.out.println("You opponent's username is: " + data.substring(14));
+                                    oppUsername = data.substring(14);
+                                }
 
 				else
 				{
@@ -556,6 +620,9 @@ public class ControlUnit extends Thread
 					engaged = true;
 					oppID = data.substring(10,13);
                                         
+                                        //send player's username to opponent
+                                        out.enque("c " + myID + " c " + oppID + " u " + myUsername);
+                                        
                                         if(getMyTurn())
                                         {
                                             System.out.println("\nYou are paired with the opponent: " + oppID + " and it is your turn.");
@@ -584,6 +651,9 @@ public class ControlUnit extends Thread
 					engaged = true;
 					gameOver = false;
 					oppID = data.substring(10,13);
+                                        
+                                        //send player's username to opponent
+                                         out.enque("c " + myID + " c " + oppID + " u " + myUsername);
 
 					boolean gotNew = false;
 
