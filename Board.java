@@ -223,10 +223,10 @@ public class Board extends JComponent
                                     //clear the board
                                     clearBoard();
                                 }
-                                else if(wasDisengaged && control.engaged())
+                                else if(wasDisengaged && control.engaged() && !control.gameOver())
                                 {
                                     wasDisengaged = false;
-                                    gameOver();
+                                    engaged();
                                     clearBoard();
                                     fillBoard();
                                     try { MainWindow.clearChat();}
