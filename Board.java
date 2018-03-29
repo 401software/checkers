@@ -421,6 +421,7 @@ public class Board extends JComponent
                              }
 
                              move = control.move(oldY, oldX, newY, newX);
+                             isJump(oldY, oldX, newY, newX);
 
                             for (PosCheck posCheck: posChecks)
                                     if (!move)
@@ -766,6 +767,9 @@ public class Board extends JComponent
          case 7:
                 oldY = 465;
      }
+     
+     if(oppMove[0] != 1)
+        isJump(oppMove[0], oppMove[1], oppMove[2], oppMove[3]);
 
       for (PosCheck posCheckA: posChecks)
             if (posCheckA.cx == oldX && posCheckA.cy == oldY)
@@ -789,8 +793,48 @@ public class Board extends JComponent
 
       return m;
    }
+    
+    
+    protected boolean isJump(int prevA, int prevB, int currA, int currB)
+	{
+		boolean jump = false;
+                
+             
+             System.out.println("prevA " + prevA + " prevB " + prevB + "currA " + currA + " currB " + currB);
+             
+            if(currA==prevA+2)
+            {   
+                    if(currB==prevB+2)
+                    {
+                        removePiece((new Checker(CheckerType.BLACK_REGULAR)), (prevA + 1), (prevB + 1));
+                        jump = true;
+                    }	
+                    else if(currB==prevB-2)
+                    {
+                        removePiece((new Checker(CheckerType.BLACK_REGULAR)), (prevA + 1), (prevB - 1));
+                        jump = true;
+                    }
+            }
 
+            else if(currA==prevA-2)
+            {
+                System.out.println("In the else if");
+                    if(currB==prevB+2)
+                    {
+                        removePiece((new Checker(CheckerType.RED_REGULAR)), (prevA - 1), (prevB + 1));
+                        jump = true;
+                    }
+                    else if(currB==prevB-2)
+                    {
+                        removePiece((new Checker(CheckerType.RED_REGULAR)), (prevA - 1), (prevB - 1));
+                        jump = true;
+                    }
+            }
 
+		return jump;
+	}
+    
+    
    @Override
    public Dimension getPreferredSize()
    {

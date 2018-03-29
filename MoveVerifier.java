@@ -73,7 +73,7 @@ public class MoveVerifier
 					if(board[prevA+1][prevB+1]==2)
 					{
 						if(change)
-							board[prevA+1][prevB+1] = 0;
+                                                board[prevA+1][prevB+1] = 0;
 						jump = true;
 					}
 				}	
