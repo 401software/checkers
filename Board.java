@@ -768,8 +768,11 @@ public class Board extends JComponent
                 oldY = 465;
      }
      
-     if(oppMove[0] != 1)
-        isJump(oppMove[0], oppMove[1], oppMove[2], oppMove[3]);
+     boolean thejump = false;
+     if(oppMove[0] != -1)
+        thejump = isJump(oppMove[0], oppMove[1], oppMove[2], oppMove[3]);
+     
+     System.out.println("The jump: " + thejump);
 
       for (PosCheck posCheckA: posChecks)
             if (posCheckA.cx == oldX && posCheckA.cy == oldY)
@@ -818,7 +821,6 @@ public class Board extends JComponent
 
             else if(currA==prevA-2)
             {
-                System.out.println("In the else if");
                     if(currB==prevB+2)
                     {
                         removePiece((new Checker(CheckerType.RED_REGULAR)), (prevA - 1), (prevB + 1));
