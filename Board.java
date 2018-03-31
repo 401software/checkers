@@ -421,7 +421,8 @@ public class Board extends JComponent
                              }
 
                              move = control.move(oldY, oldX, newY, newX);
-                             isJump(oldY, oldX, newY, newX);
+                             if(move)
+                                isJump(oldY, oldX, newY, newX);
 
                             for (PosCheck posCheck: posChecks)
                                     if (!move)
