@@ -468,6 +468,49 @@ public class Board extends JComponent
    }
    
    protected void fillBoard()
+   {
+       int opp = Integer.parseInt(control.getOppID());
+       int me = Integer.parseInt(control.getMyID());
+       
+       if(opp < me)
+           fillBoardr();
+       else
+           fillBoardb();
+   }
+   
+   protected void fillBoardb()
+    {
+        if(connected)
+          {
+              add(new Checker(CheckerType.BLACK_REGULAR), 5, 1);
+              add(new Checker(CheckerType.BLACK_REGULAR), 5, 3);
+              add(new Checker(CheckerType.BLACK_REGULAR), 5, 5);
+              add(new Checker(CheckerType.BLACK_REGULAR), 5, 7);
+              add(new Checker(CheckerType.BLACK_REGULAR), 6, 0);
+              add(new Checker(CheckerType.BLACK_REGULAR), 6, 2);
+              add(new Checker(CheckerType.BLACK_REGULAR), 6, 4);
+              add(new Checker(CheckerType.BLACK_REGULAR), 6, 6);
+              add(new Checker(CheckerType.BLACK_REGULAR), 7, 1);
+              add(new Checker(CheckerType.BLACK_REGULAR), 7, 3);
+              add(new Checker(CheckerType.BLACK_REGULAR), 7, 5);
+              add(new Checker(CheckerType.BLACK_REGULAR), 7, 7);
+
+              add(new Checker(CheckerType.RED_REGULAR), 0, 0);
+              add(new Checker(CheckerType.RED_REGULAR), 0, 2);
+              add(new Checker(CheckerType.RED_REGULAR), 0, 4);
+              add(new Checker(CheckerType.RED_REGULAR), 0, 6);
+              add(new Checker(CheckerType.RED_REGULAR), 1, 1);
+              add(new Checker(CheckerType.RED_REGULAR), 1, 3);
+              add(new Checker(CheckerType.RED_REGULAR), 1, 5);
+              add(new Checker(CheckerType.RED_REGULAR), 1, 7);
+              add(new Checker(CheckerType.RED_REGULAR), 2, 0);
+              add(new Checker(CheckerType.RED_REGULAR), 2, 2);
+              add(new Checker(CheckerType.RED_REGULAR), 2, 4);
+              add(new Checker(CheckerType.RED_REGULAR), 2, 6);
+          }
+    }
+   
+   protected void fillBoardr()
     {
         if(connected)
           {
@@ -783,7 +826,14 @@ public class Board extends JComponent
             }
 
       PosCheck posCheck2 = new PosCheck();
-      posCheck2.checker = new Checker(CheckerType.BLACK_REGULAR);
+      
+      int opp = Integer.parseInt(control.getOppID());
+       int me = Integer.parseInt(control.getMyID());
+       
+       if(opp < me)
+           posCheck2.checker = new Checker(CheckerType.BLACK_REGULAR);
+       else
+           posCheck2.checker = new Checker(CheckerType.RED_REGULAR);
 
       posCheck2.cx = newX;
       posCheck2.cy = newY;
