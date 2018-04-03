@@ -43,7 +43,7 @@ public class ControlLogic
 	{
 		boolean move = false;
 		boolean king  = false;
-		
+
 		if(board[prevA][prevB] != null)
 		{
 			//if the piece belongs to this player
@@ -60,7 +60,7 @@ public class ControlLogic
 					//commit move on this board
 					board[currA][currB] = board[prevA][prevB];
 					board[prevA][prevB] = null;
-					
+
 					if(currA==prevA+2 && king)
 					{
 						if(currB==prevB+2)
@@ -75,8 +75,8 @@ public class ControlLogic
 						else if(currB==prevB-2)
 							board[prevA-1][prevB-1] = null;
 					}
-					
-					
+
+
 					//see if player can jump again
 					if(mover.otherJump(currA, currB, king))
 					{
@@ -86,19 +86,19 @@ public class ControlLogic
 					else
 					{
 						mustJump = false;
-						
+
 						//opponent's turn
 						myTurn = false;
 					}
 
 					//add a point to score for jumping
-					myScore++;
+					myScore+=10;
 				}
 				else
 				{
 					//test to see if player must jump
 					mustJump = mover.canJump(prevA, prevB, king);
-					
+
 					if(mustJump)
 					{
 						System.out.println("You must jump your opponent's piece!");
@@ -106,28 +106,28 @@ public class ControlLogic
 					}
 
 					move = mover.move(prevA, prevB, currA, currB, king);
-					
+
 					//if move is valid, commit it.
 					if(move)
 					{
 						board[currA][currB] = board[prevA][prevB];
 						board[prevA][prevB] = null;
-						
+
 						//opponent's turn
 						myTurn = false;
 					}
 				}
-				
+
 				//analyze status
 				if(board[currA][currB] != null)
 					status(prevA, prevB, currA, currB, board[currA][currB].getOwner());
 			}
-			
+
 			//if the piece belongs to the opponent
 			else if(!board[prevA][prevB].getOwner() && !whom)
 			{
 				king = board[prevA][prevB].getKing();
-				
+
 				//test to see if the move to commit is a jump
 				if(mover.isJump(prevA, prevB, currA, currB, king, false))
 				{
@@ -136,7 +136,7 @@ public class ControlLogic
 					//commit move
 					board[currA][currB] = board[prevA][prevB];
 					board[prevA][prevB] = null;
-					
+
 					if(currA==prevA+2)
 					{
 						if(currB==prevB+2)
@@ -151,16 +151,16 @@ public class ControlLogic
 						else if(currB==prevB-2)
 							board[prevA-1][prevB-1] = null;
 					}
-					
+
 					//analyze status
 					if(board[currA][currB] != null)
 						status(prevA, prevB, currA, currB, board[currA][currB].getOwner());
 				}
-				
+
 				else
 				{
 					move = mover.move(prevA, prevB, currA, currB, king);
-						
+
 					//if move is valid, commit it.
 					if(move)
 					{
@@ -171,14 +171,14 @@ public class ControlLogic
 					{
 						System.out.println("Opponent tried to make an invalid move: be suspicious!");
 					}
-					
+
 					//analyze status
 					if(board[currA][currB] != null)
 						status(prevA, prevB, currA, currB, board[currA][currB].getOwner());
 				}
 			}
 		}
-		
+
 		return move;
 	}
 
@@ -189,7 +189,7 @@ public class ControlLogic
 	protected boolean movesLeft()
 	{
 		boolean move = false;
-		
+
 		for(byte i = 0; i < 8; i++)
 		{
 			for(byte j = 0; j < 8; j++)
@@ -198,10 +198,10 @@ public class ControlLogic
 					move = true;
 			}
 		}
-		
+
 		return move;
 	}
-	
+
 	/**
 	*Helper for movesLeft()
 	*Method returns true if a particualr piece can move
@@ -212,13 +212,13 @@ public class ControlLogic
 	private boolean canMove(byte currA, byte currB)
 	{
 		boolean move = false;
-		
+
 		//make sure the current space isn't empty and that it belongs to current player
 		if(board[currA][currB] != null && board[currA][currB].getOwner())
 		{
 			boolean king = board[currA][currB].getKing();
 			boolean jump = mover.otherJump(currA, currB, king);
-			
+
 			if(jump)
 			{
 				move = true;
@@ -235,7 +235,7 @@ public class ControlLogic
 					move = true;
 			}
 		}
-		
+
 		return move;
 	}
 
@@ -247,7 +247,7 @@ public class ControlLogic
 	{
 		return myScore;
 	}
-	
+
 	/**
 	*Method returns who's turn it is
 	*@return my turn or not
@@ -265,7 +265,7 @@ public class ControlLogic
 	{
 		return mustJump;
 	}
-	
+
 	/**
 	*Method sets who's turn it is to player's turn
 	*/
@@ -273,17 +273,17 @@ public class ControlLogic
 	{
 		myTurn = true;
 	}
-	
+
 	/**
 	*Passthrough for isJump() in MoveVerifier()
 	*/
 	protected boolean isJump(byte prevA, byte prevB, byte currA, byte currB, boolean change)
 	{
 		boolean king = false;
-		
+
 		if(board[prevA][prevB] != null)
 			king = board[prevA][prevB].getKing();
-		
+
 		return mover.isJump(prevA, prevB, currA, currB, king, change);
 	}
 
@@ -303,7 +303,7 @@ public class ControlLogic
 		else
 			System.out.println("You just tried to remove a jumped checker that is not your own!");
 	}
-	
+
 	/**
 	*Method will convert a player's coordinates to opponent's coordinates
 	*@param input string of coordinates
@@ -312,7 +312,7 @@ public class ControlLogic
 	protected String getOppCoordinates(String input)
 	{
 		String output = null;
-		
+
 		if(input.length() <= 3)
 		{
 			output = getOppCoorHelper(input);
@@ -322,19 +322,19 @@ public class ControlLogic
 			output = getOppCoorHelper(input.substring(0,2));
 			output += getOppCoorHelper(input.substring(3));
 		}
-		
+
 		return output;
 	}
-	
+
 	/**
 	*Helper for getOppCoordinates()
 	*@param input string
-	*@return output string 
+	*@return output string
 	*/
 	private String getOppCoorHelper(String in)
 	{
 		String out = "";
-		
+
 		if(in.charAt(0)==0)
 			out += 7;
 		else if(in.charAt(0)==1)
@@ -351,7 +351,7 @@ public class ControlLogic
 			out += 1;
 		else if(in.charAt(0)==7)
 			out += 0;
-	
+
 		if(in.charAt(1)==0)
 			out += 7;
 		else if(in.charAt(1)==1)
@@ -368,7 +368,7 @@ public class ControlLogic
 			out += 1;
 		else if(in.charAt(1)==7)
 			out += 0;
-		
+
 		return out;
 	}
 
@@ -397,9 +397,9 @@ public class ControlLogic
 		{
 			board[currA][currB].kingMe();
 			System.out.println("You have been kinged!");
-			
+
 			//add 2 to score
-			myScore+=2;
+			myScore+=20;
 		}
 		else if(currA==7 && !board[currA][currB].getKing())
 		{
@@ -456,12 +456,12 @@ public class ControlLogic
 			System.out.println();
 		}
 	}
-	
+
 	//for testing purposes only
 	public String toString()
 	{
 		String str = "\n";
-		
+
 		for(byte i = 0; i < 8; i++)
 		{
 			for(byte j = 0; j < 8; j++)
@@ -473,7 +473,7 @@ public class ControlLogic
 			}
 			str+=("\n");
 		}
-		
+
 		return str;
 	}
 }
