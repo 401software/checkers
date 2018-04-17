@@ -73,7 +73,7 @@ public class MoveVerifier
 					if(board[prevA+1][prevB+1]==2)
 					{
 						if(change)
-							board[prevA+1][prevB+1] = 0;
+                                                board[prevA+1][prevB+1] = 0;
 						jump = true;
 					}
 				}	
@@ -193,7 +193,7 @@ public class MoveVerifier
 		for(byte i = 0; i < 8; i++)
 		{
 			for(byte j = 0; j < 8; j++)
-			{
+			{      
 				if(board[i][j] == 1 && otherJump(i, j, king))
 					return true;
 			}

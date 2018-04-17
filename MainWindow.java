@@ -29,8 +29,6 @@ public class MainWindow extends JFrame {
             System.out.println(e);
         }
         
-        //board.fillBoard();
-        
         boardFrame.setContentPane(board);
     }
     

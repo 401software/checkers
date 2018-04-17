@@ -91,13 +91,29 @@ public class Board extends JComponent
 		  try
 		  {
 			control = new ControlUnit(dhcp, frame);
-                        frame.setTitle("Checkerz  |  " + control.getMyUsername());
                         
-                        System.out.print("\nWaiting for ControlUnit");
-                        while(!control.ready)
+                        try{TimeUnit.MILLISECONDS.sleep(750);}
+                        catch(Exception e){System.out.println(e);}
+                        
+                        while(!control.ready || !control.getInitialization())
                         {
-                            System.out.print(".");
+                            if(!control.getInitialization() && dhcp != null)
+                            {
+                                control.endAndExit();
+                                dhcp = JOptionPane.showInputDialog(frame, " Server not found. Please input the DHCP address of GameServer: ", "localhost");
+                                control = new ControlUnit(dhcp, frame);
+                                
+                                try{TimeUnit.MILLISECONDS.sleep(750);}
+                                catch(Exception e){System.out.println(e);}
+                            }
+                            else if(dhcp == null)
+                            {
+                                JOptionPane.showMessageDialog(frame, "Could not connect to the server. Program will now exit.", "Error!", JOptionPane.INFORMATION_MESSAGE);
+                                System.exit(0);
+                            }
                         }
+                        
+                        frame.setTitle("Checkerz  |  " + control.getMyUsername());
 		  }
 		  catch(UnknownHostException e)
 		  {
@@ -164,7 +180,9 @@ public class Board extends JComponent
                                     MainWindow.updateTurn(control.getOppUsername());
                                 }
                                 else
+                                {
                                     MainWindow.updateTurn("<game over>");
+                                }
                                 
                                 if(status != null)
                                 {
@@ -421,6 +439,8 @@ public class Board extends JComponent
                              }
 
                              move = control.move(oldY, oldX, newY, newX);
+                             if(move)
+                                isJump(oldY, oldX, newY, newX);
 
                             for (PosCheck posCheck: posChecks)
                                     if (!move)
@@ -466,6 +486,49 @@ public class Board extends JComponent
    }
    
    protected void fillBoard()
+   {
+       int opp = Integer.parseInt(control.getOppID());
+       int me = Integer.parseInt(control.getMyID());
+       
+       if(opp < me)
+           fillBoardr();
+       else
+           fillBoardb();
+   }
+   
+   protected void fillBoardb()
+    {
+        if(connected)
+          {
+              add(new Checker(CheckerType.BLACK_REGULAR), 5, 1);
+              add(new Checker(CheckerType.BLACK_REGULAR), 5, 3);
+              add(new Checker(CheckerType.BLACK_REGULAR), 5, 5);
+              add(new Checker(CheckerType.BLACK_REGULAR), 5, 7);
+              add(new Checker(CheckerType.BLACK_REGULAR), 6, 0);
+              add(new Checker(CheckerType.BLACK_REGULAR), 6, 2);
+              add(new Checker(CheckerType.BLACK_REGULAR), 6, 4);
+              add(new Checker(CheckerType.BLACK_REGULAR), 6, 6);
+              add(new Checker(CheckerType.BLACK_REGULAR), 7, 1);
+              add(new Checker(CheckerType.BLACK_REGULAR), 7, 3);
+              add(new Checker(CheckerType.BLACK_REGULAR), 7, 5);
+              add(new Checker(CheckerType.BLACK_REGULAR), 7, 7);
+
+              add(new Checker(CheckerType.RED_REGULAR), 0, 0);
+              add(new Checker(CheckerType.RED_REGULAR), 0, 2);
+              add(new Checker(CheckerType.RED_REGULAR), 0, 4);
+              add(new Checker(CheckerType.RED_REGULAR), 0, 6);
+              add(new Checker(CheckerType.RED_REGULAR), 1, 1);
+              add(new Checker(CheckerType.RED_REGULAR), 1, 3);
+              add(new Checker(CheckerType.RED_REGULAR), 1, 5);
+              add(new Checker(CheckerType.RED_REGULAR), 1, 7);
+              add(new Checker(CheckerType.RED_REGULAR), 2, 0);
+              add(new Checker(CheckerType.RED_REGULAR), 2, 2);
+              add(new Checker(CheckerType.RED_REGULAR), 2, 4);
+              add(new Checker(CheckerType.RED_REGULAR), 2, 6);
+          }
+    }
+   
+   protected void fillBoardr()
     {
         if(connected)
           {
@@ -516,6 +579,8 @@ public class Board extends JComponent
             MainWindow.drawGame.setEnabled(false);
             MainWindow.resignGame.setEnabled(false);
             MainWindow.sendChat.setEnabled(false);
+            score = 0;
+            currOpp = null;
         }
         
         /**
@@ -538,6 +603,7 @@ public class Board extends JComponent
             MainWindow.drawGame.setEnabled(false);
             MainWindow.resignGame.setEnabled(false);
             MainWindow.sendChat.setEnabled(true);
+            score = 0;
         }
 		
 	protected String getMyID()
@@ -766,6 +832,12 @@ public class Board extends JComponent
          case 7:
                 oldY = 465;
      }
+     
+     boolean thejump = false;
+     if(oppMove[0] != -1)
+        thejump = isJump(oppMove[0], oppMove[1], oppMove[2], oppMove[3]);
+     
+     System.out.println("The jump: " + thejump);
 
       for (PosCheck posCheckA: posChecks)
             if (posCheckA.cx == oldX && posCheckA.cy == oldY)
@@ -775,7 +847,14 @@ public class Board extends JComponent
             }
 
       PosCheck posCheck2 = new PosCheck();
-      posCheck2.checker = new Checker(CheckerType.BLACK_REGULAR);
+      
+      int opp = Integer.parseInt(control.getOppID());
+       int me = Integer.parseInt(control.getMyID());
+       
+       if(opp < me)
+           posCheck2.checker = new Checker(CheckerType.BLACK_REGULAR);
+       else
+           posCheck2.checker = new Checker(CheckerType.RED_REGULAR);
 
       posCheck2.cx = newX;
       posCheck2.cy = newY;
@@ -789,8 +868,47 @@ public class Board extends JComponent
 
       return m;
    }
+    
+    
+    protected boolean isJump(int prevA, int prevB, int currA, int currB)
+	{
+		boolean jump = false;
+                
+             
+             System.out.println("prevA " + prevA + " prevB " + prevB + "currA " + currA + " currB " + currB);
+             
+            if(currA==prevA+2)
+            {   
+                    if(currB==prevB+2)
+                    {
+                        removePiece((new Checker(CheckerType.BLACK_REGULAR)), (prevA + 1), (prevB + 1));
+                        jump = true;
+                    }	
+                    else if(currB==prevB-2)
+                    {
+                        removePiece((new Checker(CheckerType.BLACK_REGULAR)), (prevA + 1), (prevB - 1));
+                        jump = true;
+                    }
+            }
 
+            else if(currA==prevA-2)
+            {
+                    if(currB==prevB+2)
+                    {
+                        removePiece((new Checker(CheckerType.RED_REGULAR)), (prevA - 1), (prevB + 1));
+                        jump = true;
+                    }
+                    else if(currB==prevB-2)
+                    {
+                        removePiece((new Checker(CheckerType.RED_REGULAR)), (prevA - 1), (prevB - 1));
+                        jump = true;
+                    }
+            }
 
+		return jump;
+	}
+    
+    
    @Override
    public Dimension getPreferredSize()
    {

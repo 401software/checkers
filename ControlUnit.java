@@ -29,6 +29,7 @@ public class ControlUnit extends Thread
         private String oppUsername;             //username of opponent
 	private JFrame frame;			//parent frame from calling class
         protected boolean ready;                //whether or not we are ready to being netowrking
+        private boolean initialized;            //whether or not the sever has responded
 	
 	/**
 	*OVERLOADED
@@ -49,6 +50,7 @@ public class ControlUnit extends Thread
 		gameOver = false;
                 myUsername = "Moi";
                 oppUsername = "John Doe";
+                initialized = false;
                 
 		//makes sure that TransmitData is fully initialized so that our data will be accurate
 		do
@@ -351,7 +353,7 @@ public class ControlUnit extends Thread
 	*/
 	protected String getMyID()
 	{
-		return myID;
+            return myID;
 	}
 
 	/**
@@ -360,8 +362,17 @@ public class ControlUnit extends Thread
 	*/
 	protected String getOppID()
 	{
-		return oppID;
+            return oppID;
 	}
+        
+        /**
+         * Accessor for initizalized
+         * @return you know what it returns, you cheeky sonofagun
+         */
+        protected boolean getInitialization()
+        {
+            return initialized;
+        }
 
 	/**
 	*Run method from Thread
@@ -446,6 +457,8 @@ public class ControlUnit extends Thread
 		if(result==JOptionPane.YES_OPTION)
 		{
 			out.enque("c " + myID + " c " + oppID + " d a");
+                        
+                        status.enque("Game has been drawn...and quartered.");
 			
 			gameOver = true;
 		}
@@ -609,6 +622,7 @@ public class ControlUnit extends Thread
 						out.enque("c " + myID + " c " + oppID + " l");
 						gameOver = true;
 						status.enque("There are no moves left. Opponent wins by default.");
+                                                status.enque("There are no moves left. Opponent wins by default.");
 					}
 				}
 			}
@@ -670,25 +684,35 @@ public class ControlUnit extends Thread
                                                 System.out.println("\nOpponent found: " + oppID + ". Opponent will go first.");
                                                 status.enque("Opponent found: " + oppID + ". Opponent will go first.");
                                         }
+                                        
+                                        initialized =  true;
 				}
 				//no opponents available
 				else if(data.substring(8,9).equals("f"))
 				{
+                                    if(!engaged)
+                                    {
 					engaged = false;
 					gameOver = true;
 					oppID = null;
-					System.out.println("\nThere are no new opponents available at this time.");
-					status.enque("There are no new opponents available at this time.");
+                                    }
+                                    
+                                    System.out.println("\nThere are no new opponents available at this time.");
+                                    status.enque("There are no new opponents available at this time.");
+
+                                    initialized =  true;
 				}
 			}
 			else if(data.substring(6,7).equals("i"))
 			{
 				//player has been initialized in the server
 				myID = data.substring(2,5);
+                                initialized =  true;
 			}
 			else
 			{
 				System.out.println("Unknown string arrived from server: " + data);
+                                initialized =  true;
 			}
 		}
 	}
