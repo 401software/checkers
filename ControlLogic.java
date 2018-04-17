@@ -101,7 +101,6 @@ public class ControlLogic
 
 					if(mustJump)
 					{
-						System.out.println("You must jump your opponent's piece!");
 						return move;
 					}
 

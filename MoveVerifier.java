@@ -398,17 +398,4 @@ public class MoveVerifier
 			}
 		}
 	}
-	
-	//for testing purposes only
-	public void printBoard()
-	{
-		for(byte i = 0; i < 8; i++)
-		{
-			for(byte j = 0; j < 8; j++)
-			{
-				System.out.print(board[i][j] + ", ");
-			}
-			System.out.println();
-		}
-	}
 }

@@ -14,7 +14,7 @@ public class MainWindow extends JFrame {
      */
     public MainWindow() {
         
-        this.setTitle("Checkerz");
+        this.setTitle("Czechers");
         initComponents();
         
         remove_title_bar();

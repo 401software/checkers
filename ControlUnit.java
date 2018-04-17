@@ -20,9 +20,9 @@ public class ControlUnit extends Thread
 	private boolean mustJump;
         private boolean anotherJump;
 	private String prevString;		//string previously recieved
-	private Queue out;				//Queue for outgoing Strings
+	private Queue out;                      //Queue for outgoing Strings
 	private Queue status;			//Queue for status updates
-	private Queue chat;				//Queue for chat messages
+	private Queue chat;			//Queue for chat messages
 	private Queue oppMoves;			//Queue for opponent moves
 	private boolean gameOver;		//flag if the game is over
         private String myUsername;              //username of current player
@@ -48,22 +48,22 @@ public class ControlUnit extends Thread
 		oppMoves = new Queue();
 		engaged = false;
 		gameOver = false;
-                myUsername = "Moi";
-                oppUsername = "John Doe";
+                myUsername = "John Doe";
+                oppUsername = "";
                 initialized = false;
                 
 		//makes sure that TransmitData is fully initialized so that our data will be accurate
 		do
 		{
-			myID = network.getMyID();
-			oppID = network.getOppID();
+                    myID = network.getMyID();
+                    oppID = network.getOppID();
 		}while(!network.initialized());
 
 		//decide who begins
 		if(oppID == null || Integer.parseInt(network.getMyID()) < Integer.parseInt(network.getOppID()))
-			control = new ControlLogic(true);
+                    control = new ControlLogic(true);
 		else
-			control = new ControlLogic(false);
+                    control = new ControlLogic(false);
                 
                 ready = true;
 
@@ -89,12 +89,15 @@ public class ControlUnit extends Thread
 		oppMoves = new Queue();
 		engaged = false;
 		gameOver = false;
-                myUsername = "Moi";
-                oppUsername = "John Doe";
+                myUsername = "John Doe";
+                oppUsername = "";
                 
                 //get player's username
                 String user = JOptionPane.showInputDialog(frame, "Please input your desired username: ", myUsername);
-                myUsername = user;
+                
+                //fail safe if user hits the cancel option
+                if(user!=null)
+                    myUsername = user;
                 
                 network = new TransmitData(ip);
                 
@@ -159,17 +162,17 @@ public class ControlUnit extends Thread
 		else if(!jump && mustJump && !anotherJump)
                 {
 			status.enque("You must jump your opponent's piece.");
-                        JOptionPane.showMessageDialog(frame, "You must jump your opponent's piece.", "Checkerz", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(frame, "You must jump your opponent's piece.", "Czechers", JOptionPane.ERROR_MESSAGE);
                 }
 		else if(jump && !mustJump)
 			out.enque("c " + myID + " c " + oppID + " j " + control.getOppCoordinates(prev) + " " + control.getOppCoordinates(curr) + " t");
 		else if(move && !jump)
 			out.enque("c " + myID + " c " + oppID + " m " + control.getOppCoordinates(prev) + " " + control.getOppCoordinates(curr));
 		else if(!move && !jump && !mustJump)
-                        JOptionPane.showMessageDialog(frame, "Invalid Move!", "Checkerz", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(frame, "Invalid Move!", "Czechers", JOptionPane.ERROR_MESSAGE);
                 else if(anotherJump && !jump && mustJump)
                 {
-                        JOptionPane.showMessageDialog(frame, "You must jump again!", "Checkerz", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(frame, "You must jump again!", "Czechers", JOptionPane.ERROR_MESSAGE);
                         anotherJump = false;
                         //mustJump = control.getJumpStatus();
                         mustJump = false;
@@ -178,7 +181,6 @@ public class ControlUnit extends Thread
 		//see if there are anhy moves left
 		if(!control.movesLeft())
 		{
-			System.out.println("\nThere are no moves left. Opponent wins by default.\n");
 			out.enque("c " + myID + " c " + oppID + " l");
 			gameOver = true;
 		}
@@ -429,7 +431,7 @@ public class ControlUnit extends Thread
 		if(result==JOptionPane.YES_OPTION)
 		{
 			out.enque("c " + myID + " c " + oppID + " g a");
-			status.enque("New game with player " + oppID + " has begun.");
+			status.enque("New game has begun.");
 			
 			gameOver = false;
 			
@@ -442,7 +444,7 @@ public class ControlUnit extends Thread
 		else if(result==JOptionPane.NO_OPTION)
 		{
 			out.enque("c " + myID + " c " + oppID + " g r");
-			status.enque("You have rejected the new game invite from player " + oppID + ".");
+			status.enque("You have rejected the new game invite.");
 		}
 	}
 	
@@ -485,15 +487,14 @@ public class ControlUnit extends Thread
 				engaged = false;
 				gameOver = true;
 				oppID = null;
-				System.out.println("\nOpponent has terminated the connection.");
 				status.enque("Opponent has terminated the connection.");
 			}
 			else if(data.substring(6,7).equals("c"))
 			{
 				if(data.substring(12,13).equals("l"))
 				{
-					System.out.println("\nYou've won the game by default!\n");
 					status.enque("You've won the game by default!");
+                                        JOptionPane.showMessageDialog(frame, "You've won the game by default!", "Czechers", JOptionPane.WARNING_MESSAGE);
 					gameOver = true;
 				}
 				
@@ -501,14 +502,12 @@ public class ControlUnit extends Thread
 				{
 					if(data.length() <= 13)
 					{
-						newGameRequest();
-						System.out.println("Opponent has requested new game.\n");
-						status.enque("Opponent has requested new game.");
+                                            status.enque("Opponent has requested new game.");
+                                            newGameRequest();
 					}
 					else if(data.substring(14).equals("a"))
 					{
 						status.enque("Opponent has accepted your new game invite.");
-						System.out.println("Opponent has accepted your new game invite.\n");
 						
 						gameOver = false;
 						
@@ -529,12 +528,10 @@ public class ControlUnit extends Thread
 					if(data.length() <= 13)
 					{
 						drawRequest();
-						System.out.println("Opponent has offered a draw.\n");
 					}
 					else if(data.substring(14).equals("a"))
 					{
 						status.enque("Opponent has accepted your draw.");
-						System.out.println("Opponent has accepted your draw.\n");
 						
 						gameOver = true;
 					}
@@ -546,22 +543,19 @@ public class ControlUnit extends Thread
 				
 				else if(data.substring(12,13).equals("r"))
 				{
-					System.out.println("\nOpponent has resigned. You won!\n");
 					status.enque("Opponent has resigned. You won!");
+                                        JOptionPane.showMessageDialog(frame, "Opponent has resigned. You won!", "Czechers", JOptionPane.WARNING_MESSAGE);
 					gameOver = true;
 				}
 
 				else if(data.substring(12,13).equals("c"))
 				{
-					System.out.println("\nMessage from opponent: " + data.substring(14) + "\n");
-
 					chat.enque(data.substring(14));
 					status.enque("Message recieved from opponent.");
 				}
                                 
                                 else if(data.substring(12,13).equals("u"))
                                 {
-                                    System.out.println("You opponent's username is: " + data.substring(14));
                                     oppUsername = data.substring(14);
                                 }
 
@@ -612,17 +606,16 @@ public class ControlUnit extends Thread
 					{
 						status.enque("Your opponent tried to move though the game is over. Be suspicious!");
 					}
-					//REMOVE AFTER TEST STAGE
-					printBoard();
 
 					//see if there are anhy moves left for current player
 					if(!control.movesLeft() && !gameOver)
 					{
-						System.out.println("\nThere are no moves left. Opponent wins by default.\n");
-						out.enque("c " + myID + " c " + oppID + " l");
+						network.sendData("c " + myID + " c " + oppID + " l");
+                                                
 						gameOver = true;
 						status.enque("There are no moves left. Opponent wins by default.");
                                                 status.enque("There are no moves left. Opponent wins by default.");
+                                                JOptionPane.showMessageDialog(frame, "There are no moves left. Opponent wins.", "Czechers", JOptionPane.WARNING_MESSAGE);
 					}
 				}
 			}
@@ -639,13 +632,11 @@ public class ControlUnit extends Thread
                                         
                                         if(getMyTurn())
                                         {
-                                            System.out.println("\nYou are paired with the opponent: " + oppID + " and it is your turn.");
-                                            status.enque("You are paired with the opponent: " + oppID + " and it is your turn.");
+                                            status.enque("You are now paired and it is your turn.");
                                         }
                                         else
                                         {
-                                            System.out.println("\nYou are paired with the opponent: " + oppID + ". Opponent will go first.");
-                                            status.enque("You are paired with the opponent: " + oppID + ". Opponent will go first.");
+                                            status.enque("You are paired. Opponent will go first.");
                                         }
 				}
 				//player has no opponent
@@ -653,7 +644,6 @@ public class ControlUnit extends Thread
 				{
 					engaged = false;
 					oppID = null;
-					System.out.println("\nYou are not paired with any opponent.");
 					status.enque("You are not paired with any opponent.");
 				}
 			}
@@ -675,14 +665,12 @@ public class ControlUnit extends Thread
 					if(oppID == null || Integer.parseInt(myID) < Integer.parseInt(oppID))
                                         {
 						control = new ControlLogic(true);
-                                                System.out.println("\nOpponent found: " + oppID + " and it is your turn.");
-                                                status.enque("Opponent found: " + oppID + " and it is your turn.");
+                                                status.enque("Opponent has been found and it is your turn.");
                                         }
 					else
                                         {
 						control = new ControlLogic(false);
-                                                System.out.println("\nOpponent found: " + oppID + ". Opponent will go first.");
-                                                status.enque("Opponent found: " + oppID + ". Opponent will go first.");
+                                                status.enque("Opponent has been found and has the first turn.");
                                         }
                                         
                                         initialized =  true;
@@ -697,7 +685,6 @@ public class ControlUnit extends Thread
 					oppID = null;
                                     }
                                     
-                                    System.out.println("\nThere are no new opponents available at this time.");
                                     status.enque("There are no new opponents available at this time.");
 
                                     initialized =  true;

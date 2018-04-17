@@ -99,21 +99,26 @@ public class Board extends JComponent
                         {
                             if(!control.getInitialization() && dhcp != null)
                             {
-                                control.endAndExit();
                                 dhcp = JOptionPane.showInputDialog(frame, " Server not found. Please input the DHCP address of GameServer: ", "localhost");
-                                control = new ControlUnit(dhcp, frame);
+                                if(dhcp == null)
+                                {
+                                    JOptionPane.showMessageDialog(frame, "Valid DHCP was not entered. Program will now exit.", "Error!", JOptionPane.INFORMATION_MESSAGE);
+                                    System.exit(0);
+                                }
+                                else
+                                    control = new ControlUnit(dhcp, frame);
                                 
                                 try{TimeUnit.MILLISECONDS.sleep(750);}
                                 catch(Exception e){System.out.println(e);}
                             }
                             else if(dhcp == null)
                             {
-                                JOptionPane.showMessageDialog(frame, "Could not connect to the server. Program will now exit.", "Error!", JOptionPane.INFORMATION_MESSAGE);
+                                JOptionPane.showMessageDialog(frame, "Could not connect to the server. Program will now exit.", "Error!", JOptionPane.WARNING_MESSAGE);
                                 System.exit(0);
                             }
                         }
                         
-                        frame.setTitle("Checkerz  |  " + control.getMyUsername());
+                        frame.setTitle("Czechers  |  " + control.getMyUsername());
 		  }
 		  catch(UnknownHostException e)
 		  {
@@ -145,13 +150,13 @@ public class Board extends JComponent
 		  }
 		  
 		  try
-			{
-				TimeUnit.MILLISECONDS.sleep(500);
-			}
-			catch(Exception e)
-			{
-				System.out.println(e);
-			}
+                    {
+                            TimeUnit.MILLISECONDS.sleep(500);
+                    }
+                    catch(Exception e)
+                    {
+                            System.out.println(e);
+                    }
 	  }
 
 	  Thread appThread = new Thread(new Runnable() {
@@ -192,15 +197,11 @@ public class Board extends JComponent
                                         
                                         if(!control.gameOver())
                                             engaged();
-                                        
-                                        if(status.equals("Opponent has requested new game."))
-                                            MainWindow.updateStatus("New game has begun.");
                                 }
                                 
                                 if(oppMove[0] != -1)
                                 {
                                         move();
-                                        System.out.print("\nWaiting for move to complete");
                                         while(!complete)
                                         {
                                                 System.out.print(".");
@@ -450,7 +451,11 @@ public class Board extends JComponent
                                        move = true;
                                        
                                        if(!control.getMyTurn())
+                                       {
                                            MainWindow.updateStatus("It's not thy turn!");
+                                           JOptionPane.showMessageDialog(frame, "Y'all done need to wait your turn!", "Hold your horses, partner!", JOptionPane.WARNING_MESSAGE);
+                                       }
+                                       
                                     }
                                     else
                                     {
@@ -581,6 +586,8 @@ public class Board extends JComponent
             MainWindow.sendChat.setEnabled(false);
             score = 0;
             currOpp = null;
+            MainWindow.updateOpp("<Not Paired>");
+            MainWindow.updateScore(score);
         }
         
         /**
@@ -837,7 +844,6 @@ public class Board extends JComponent
      if(oppMove[0] != -1)
         thejump = isJump(oppMove[0], oppMove[1], oppMove[2], oppMove[3]);
      
-     System.out.println("The jump: " + thejump);
 
       for (PosCheck posCheckA: posChecks)
             if (posCheckA.cx == oldX && posCheckA.cy == oldY)
@@ -873,9 +879,6 @@ public class Board extends JComponent
     protected boolean isJump(int prevA, int prevB, int currA, int currB)
 	{
 		boolean jump = false;
-                
-             
-             System.out.println("prevA " + prevA + " prevB " + prevB + "currA " + currA + " currB " + currB);
              
             if(currA==prevA+2)
             {   
@@ -936,14 +939,16 @@ public class Board extends JComponent
                                         RenderingHints.VALUE_ANTIALIAS_ON);
 
       // Paint checkerboard.
+      final Color COLOR1 = Color.BLACK;
+      final Color COLOR2 = Color.LIGHT_GRAY;
 
       for (int row = 0; row < 8; row++)
       {
-         g.setColor(((row & 1) != 0) ? Color.BLACK : Color.WHITE);
+         g.setColor(((row & 1) != 0) ? COLOR2 : COLOR1);
          for (int col = 0; col < 8; col++)
          {
             g.fillRect(col * SQUAREDIM, row * SQUAREDIM, SQUAREDIM, SQUAREDIM);
-            g.setColor((g.getColor() == Color.BLACK) ? Color.WHITE : Color.BLACK);
+            g.setColor((g.getColor() == COLOR1) ? COLOR2 : COLOR1);
          }
       }
    }
