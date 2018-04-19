@@ -77,6 +77,7 @@ public class Board extends JComponent
    private String prevOpp;
    private boolean wasDisengaged;
    private boolean boardEmpty;
+   private boolean king;
 
    public Board(JFrame frame) throws Exception
    {
@@ -113,7 +114,7 @@ public class Board extends JComponent
                             }
                             else if(dhcp == null)
                             {
-                                JOptionPane.showMessageDialog(frame, "Could not connect to the server. Program will now exit.", "Error!", JOptionPane.WARNING_MESSAGE);
+                                JOptionPane.showMessageDialog(frame, "Program will now exit.", "( ͡º ͜ʖ ͡º)", JOptionPane.INFORMATION_MESSAGE);
                                 System.exit(0);
                             }
                         }
@@ -122,7 +123,7 @@ public class Board extends JComponent
 		  }
 		  catch(UnknownHostException e)
 		  {
-			  JOptionPane.showMessageDialog(frame, "Could not connect to the server. Program will now exit.", "Error!", JOptionPane.INFORMATION_MESSAGE);
+			  JOptionPane.showMessageDialog(frame, "The Russians have hacked the server. Program will now exit.", "Putin Rules!", JOptionPane.INFORMATION_MESSAGE);
 			  System.exit(0);
 		  }
 	  }
@@ -144,8 +145,6 @@ public class Board extends JComponent
 		  if(status != null)
 		  {
 			  connected = true;
-                          
-			  //JOptionPane.showMessageDialog(frame, status, "Status Update", JOptionPane.INFORMATION_MESSAGE);
                           MainWindow.updateStatus(status);
 		  }
 		  
@@ -191,7 +190,6 @@ public class Board extends JComponent
                                 
                                 if(status != null)
                                 {
-                                        //JOptionPane.showMessageDialog(frame, status, "Status Update", JOptionPane.INFORMATION_MESSAGE);
                                         MainWindow.updateStatus(status);
                                         oldStatus = status;
                                         
@@ -441,7 +439,24 @@ public class Board extends JComponent
 
                              move = control.move(oldY, oldX, newY, newX);
                              if(move)
+                             {
                                 isJump(oldY, oldX, newY, newX);
+                                king = control.getKingStatus(newY, newX);
+                                
+                                if(king)
+                                {
+                                    //change the piece on the board from a reg. to a king
+                                    removePiece((new Checker(CheckerType.BLACK_REGULAR)), newY, newX);
+                                    
+                                    int opp = Integer.parseInt(control.getOppID());
+                                    int me2 = Integer.parseInt(control.getMyID());
+
+                                    if(opp < me2)
+                                        add((new Checker(CheckerType.RED_KING)), newY, newX);
+                                    else
+                                        add((new Checker(CheckerType.BLACK_KING)), newY, newX);
+                                }
+                             }
 
                             for (PosCheck posCheck: posChecks)
                                     if (!move)
@@ -857,10 +872,23 @@ public class Board extends JComponent
       int opp = Integer.parseInt(control.getOppID());
        int me = Integer.parseInt(control.getMyID());
        
-       if(opp < me)
-           posCheck2.checker = new Checker(CheckerType.BLACK_REGULAR);
+       king = control.getKingStatus(oppMove[2], oppMove[3]);
+                                
+        if(king)
+        {
+            //change the piece on the board from a reg. to a king
+            if(opp < me)
+                posCheck2.checker = new Checker(CheckerType.BLACK_KING);
+            else
+                posCheck2.checker = new Checker(CheckerType.RED_KING);
+        }
        else
-           posCheck2.checker = new Checker(CheckerType.RED_REGULAR);
+        {
+            if(opp < me)
+                posCheck2.checker = new Checker(CheckerType.BLACK_REGULAR);
+            else
+                posCheck2.checker = new Checker(CheckerType.RED_REGULAR);
+        }
 
       posCheck2.cx = newX;
       posCheck2.cy = newY;

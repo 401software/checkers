@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -15,6 +16,7 @@ public class MainWindow extends JFrame {
     public MainWindow() {
         
         this.setTitle("Czechers");
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage("Logo.png"));
         initComponents();
         
         remove_title_bar();

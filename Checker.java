@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Font;
 
 public final class Checker
 {
@@ -16,6 +17,7 @@ public final class Checker
    {
       int x = cx - DIMENSION / 2;
       int y = cy - DIMENSION / 2;
+      Font font = new Font("Comic Sans", Font.BOLD,12);
 
       // Set checker color.
 
@@ -27,11 +29,12 @@ public final class Checker
 
       g.fillOval(x, y, DIMENSION, DIMENSION);
       g.setColor(Color.WHITE);
+      g.setFont(font);
       g.drawOval(x, y, DIMENSION, DIMENSION);
 
       if (checkerType == CheckerType.RED_KING || 
           checkerType == CheckerType.BLACK_KING)
-         g.drawString("K", cx, cy);
+         g.drawString("( ͡º ͜ʖ ͡º)", (cx-16), (cy+2));
    }
 
    public static boolean contains(int x, int y, int cx, int cy)

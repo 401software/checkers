@@ -187,6 +187,19 @@ public class ControlUnit extends Thread
 
 		return move;
 	}
+        
+        /**
+         * Returns whether or not a piece is a king
+         * @param prev x
+         * @param prev y
+         * @param cuur x
+         * @param curr y
+         * @return king status
+         */
+        protected boolean getKingStatus(int curra, int currb)
+        {
+            return control.getKingStatus(curra, currb);
+        }
 
 	/**
 	*Find a new opponent
@@ -487,14 +500,14 @@ public class ControlUnit extends Thread
 				engaged = false;
 				gameOver = true;
 				oppID = null;
-				status.enque("Opponent has terminated the connection.");
+				status.enque("Opponent has left the game...It's okay, at least we still have each other :)");
 			}
 			else if(data.substring(6,7).equals("c"))
 			{
 				if(data.substring(12,13).equals("l"))
 				{
-					status.enque("You've won the game by default!");
-                                        JOptionPane.showMessageDialog(frame, "You've won the game by default!", "Czechers", JOptionPane.WARNING_MESSAGE);
+					status.enque("You've won the game!");
+                                        JOptionPane.showMessageDialog(frame, "You've won the game!", "Czechers", JOptionPane.WARNING_MESSAGE);
 					gameOver = true;
 				}
 				
@@ -507,7 +520,7 @@ public class ControlUnit extends Thread
 					}
 					else if(data.substring(14).equals("a"))
 					{
-						status.enque("Opponent has accepted your new game invite.");
+						status.enque("Opponent has accepted your new game invite!");
 						
 						gameOver = false;
 						
@@ -519,7 +532,7 @@ public class ControlUnit extends Thread
 					}
 					else if(data.substring(14).equals("r"))
 					{
-						status.enque("Opponent has declined to start a new game.");
+						status.enque("Opponent has declined to start a new game :(");
 					}
 				}
 				
@@ -551,7 +564,7 @@ public class ControlUnit extends Thread
 				else if(data.substring(12,13).equals("c"))
 				{
 					chat.enque(data.substring(14));
-					status.enque("Message recieved from opponent.");
+					status.enque("Opponent has slid into your DMs. #Slay");
 				}
                                 
                                 else if(data.substring(12,13).equals("u"))
@@ -613,9 +626,9 @@ public class ControlUnit extends Thread
 						network.sendData("c " + myID + " c " + oppID + " l");
                                                 
 						gameOver = true;
-						status.enque("There are no moves left. Opponent wins by default.");
-                                                status.enque("There are no moves left. Opponent wins by default.");
-                                                JOptionPane.showMessageDialog(frame, "There are no moves left. Opponent wins.", "Czechers", JOptionPane.WARNING_MESSAGE);
+						status.enque("Opponent wins :(");
+                                                status.enque("Opponent wins :(");
+                                                JOptionPane.showMessageDialog(frame, "Opponent has won the game.", "You Failed", JOptionPane.WARNING_MESSAGE);
 					}
 				}
 			}
@@ -685,7 +698,7 @@ public class ControlUnit extends Thread
 					oppID = null;
                                     }
                                     
-                                    status.enque("There are no new opponents available at this time.");
+                                    status.enque("There are no new opponents available at this time. #ForeverAlone");
 
                                     initialized =  true;
 				}

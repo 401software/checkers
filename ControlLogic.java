@@ -246,7 +246,25 @@ public class ControlLogic
 	{
 		return myScore;
 	}
-
+        
+        /**
+         * Returns whether or not a piece is a king
+         * @param prev x
+         * @param prev y
+         * @param cuur x
+         * @param curr y
+         * @return king status
+         */
+        protected boolean getKingStatus(int curra, int currb)
+        {
+            boolean kingy = board[curra][currb].getKing();
+            
+           if(kingy)
+               return true;
+           
+           return false;
+        }
+        
 	/**
 	*Method returns who's turn it is
 	*@return my turn or not
